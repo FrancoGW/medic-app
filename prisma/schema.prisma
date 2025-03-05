@@ -45,6 +45,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   role          Role?     @relation(fields: [roleId], references: [id])
+  invitations   DoctorInvitation[] @relation("InvitedBy")
 }
 
 model VerificationToken {
@@ -60,4 +61,13 @@ model Role {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   name  String @unique
   users User[]
+}
+
+model DoctorInvitation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  createdAt DateTime @default(now())
+  invitedBy String   @db.ObjectId
+  status    String   @default("PENDING") // PENDING, ACCEPTED, REVOKED
+  admin     User     @relation("InvitedBy", fields: [invitedBy], references: [id])
 }
